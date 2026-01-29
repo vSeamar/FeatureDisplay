@@ -1,0 +1,13 @@
+{
+  "name": "feature-display",
+  "version": "1.0.0",
+  "description": "Test application with multiple features for agent testing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

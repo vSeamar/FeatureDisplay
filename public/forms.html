@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms - Feature Display</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .form-section {
+      margin-bottom: 2rem;
+    }
+    .form-section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary-color);
+    }
+    .color-preview {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+    .range-value {
+      display: inline-block;
+      min-width: 50px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .star-rating {
+      display: flex;
+      gap: 0.25rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .star-rating span {
+      color: #ddd;
+      transition: color 0.2s;
+    }
+    .star-rating span.active {
+      color: #ffc107;
+    }
+    .file-drop-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .file-drop-zone:hover,
+    .file-drop-zone.dragover {
+      border-color: var(--primary-color);
+      background-color: rgba(74, 144, 217, 0.05);
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      background-color: var(--light-color);
+      border-radius: 16px;
+      font-size: 0.9rem;
+      margin: 0.25rem;
+    }
+    .chip button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--secondary-color);
+    }
+    .validation-message {
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+    .validation-message.error { color: var(--danger-color); }
+    .validation-message.success { color: var(--success-color); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="logo">FeatureDisplay</a>
+    <ul>
+      <li><a href="/">Dashboard</a></li>
+      <li><a href="/todos.html">Todos</a></li>
+      <li><a href="/notes.html">Notes</a></li>
+      <li><a href="/data.html">Data Table</a></li>
+      <li><a href="/forms.html" class="active">Forms</a></li>
+      <li><a href="/settings.html">Settings</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1 style="margin-bottom: 1.5rem;">Forms Demo</h1>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
+      <!-- Basic Inputs -->
+      <div class="card">
+        <h2 class="form-section-title">Basic Inputs</h2>
+
+        <div class="form-group">
+          <label for="textInput">Text Input</label>
+          <input type="text" class="form-control" id="textInput" placeholder="Enter text...">
+        </div>
+
+        <div class="form-group">
+          <label for="emailInput">Email Input (with validation)</label>
+          <input type="email" class="form-control" id="emailInput" placeholder="email@example.com">
+          <div class="validation-message" id="emailValidation"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="passwordInput">Password Input</label>
+          <input type="password" class="form-control" id="passwordInput" placeholder="Enter password...">
+          <div class="validation-message" id="passwordStrength"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="numberInput">Number Input</label>
+          <input type="number" class="form-control" id="numberInput" placeholder="0" min="0" max="100">
+        </div>
+
+        <div class="form-group">
+          <label for="phoneInput">Phone Input (formatted)</label>
+          <input type="tel" class="form-control" id="phoneInput" placeholder="(123) 456-7890">
+        </div>
+
+        <div class="form-group">
+          <label for="textareaInput">Textarea</label>
+          <textarea class="form-control" id="textareaInput" rows="3" placeholder="Enter longer text..."></textarea>
+          <small style="color: #666;"><span id="charCount">0</span> / 500 characters</small>
+        </div>
+      </div>
+
+      <!-- Selection Controls -->
+      <div class="card">
+        <h2 class="form-section-title">Selection Controls</h2>
+
+        <div class="form-group">
+          <label for="selectInput">Dropdown Select</label>
+          <select class="form-control" id="selectInput">
+            <option value="">Select an option...</option>
+            <option value="option1">Option 1</option>
+            <option value="option2">Option 2</option>
+            <option value="option3">Option 3</option>
+            <option value="option4">Option 4</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="multiSelect">Multi-Select</label>
+          <select class="form-control" id="multiSelect" multiple style="height: 100px;">
+            <option value="a">Choice A</option>
+            <option value="b">Choice B</option>
+            <option value="c">Choice C</option>
+            <option value="d">Choice D</option>
+          </select>
+          <small style="color: #666;">Hold Ctrl/Cmd to select multiple</small>
+        </div>
+
+        <div class="form-group">
+          <label>Radio Buttons</label>
+          <div class="form-check">
+            <input type="radio" name="radioGroup" id="radio1" value="1">
+            <label for="radio1">Radio Option 1</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" name="radioGroup" id="radio2" value="2">
+            <label for="radio2">Radio Option 2</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" name="radioGroup" id="radio3" value="3">
+            <label for="radio3">Radio Option 3</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Checkboxes</label>
+          <div class="form-check">
+            <input type="checkbox" id="check1">
+            <label for="check1">Checkbox Option 1</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="check2">
+            <label for="check2">Checkbox Option 2</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="check3">
+            <label for="check3">Checkbox Option 3</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Toggle Switches</label>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label style="display: flex; align-items: center; gap: 0.75rem;">
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggle1">
+                <span class="toggle-slider"></span>
+              </label>
+              <span>Enable Feature A</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.75rem;">
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggle2" checked>
+                <span class="toggle-slider"></span>
+              </label>
+              <span>Enable Feature B</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced Inputs -->
+      <div class="card">
+        <h2 class="form-section-title">Advanced Inputs</h2>
+
+        <div class="form-group">
+          <label for="dateInput">Date Picker</label>
+          <input type="date" class="form-control" id="dateInput">
+        </div>
+
+        <div class="form-group">
+          <label for="timeInput">Time Picker</label>
+          <input type="time" class="form-control" id="timeInput">
+        </div>
+
+        <div class="form-group">
+          <label for="datetimeInput">DateTime Picker</label>
+          <input type="datetime-local" class="form-control" id="datetimeInput">
+        </div>
+
+        <div class="form-group">
+          <label for="colorInput">Color Picker</label>
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <input type="color" id="colorInput" value="#4a90d9">
+            <div class="color-preview" id="colorPreview" style="background-color: #4a90d9;"></div>
+            <span id="colorValue">#4a90d9</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="rangeInput">Range Slider</label>
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <input type="range" id="rangeInput" min="0" max="100" value="50" style="flex: 1;">
+            <span class="range-value" id="rangeValue">50</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Star Rating</label>
+          <div class="star-rating" id="starRating">
+            <span data-value="1">★</span>
+            <span data-value="2">★</span>
+            <span data-value="3">★</span>
+            <span data-value="4">★</span>
+            <span data-value="5">★</span>
+          </div>
+          <small id="ratingText" style="color: #666;">Click to rate</small>
+        </div>
+
+        <div class="form-group">
+          <label for="searchAutocomplete">Search with Autocomplete</label>
+          <input type="text" class="form-control" id="searchAutocomplete" placeholder="Type to search..." list="searchSuggestions">
+          <datalist id="searchSuggestions">
+            <option value="Apple">
+            <option value="Banana">
+            <option value="Cherry">
+            <option value="Date">
+            <option value="Elderberry">
+            <option value="Fig">
+            <option value="Grape">
+          </datalist>
+        </div>
+      </div>
+
+      <!-- File Upload & Tags -->
+      <div class="card">
+        <h2 class="form-section-title">File Upload & Tags</h2>
+
+        <div class="form-group">
+          <label>File Upload</label>
+          <input type="file" class="form-control" id="fileInput" multiple>
+        </div>
+
+        <div class="form-group">
+          <label>Drag & Drop Zone</label>
+          <div class="file-drop-zone" id="dropZone">
+            <p style="margin-bottom: 0.5rem;">Drag & drop files here</p>
+            <small style="color: #666;">or click to browse</small>
+          </div>
+          <div id="fileList" style="margin-top: 0.5rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="tagInput">Tag Input</label>
+          <input type="text" class="form-control" id="tagInput" placeholder="Press Enter to add tag...">
+          <div id="tagContainer" style="margin-top: 0.5rem;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Form Actions</h2>
+      </div>
+      <div class="btn-group" style="flex-wrap: wrap;">
+        <button class="btn btn-primary" id="submitForm">Submit Form</button>
+        <button class="btn btn-secondary" id="resetForm">Reset Form</button>
+        <button class="btn btn-info" id="fillSample">Fill Sample Data</button>
+        <button class="btn btn-warning" id="validateForm">Validate All</button>
+        <button class="btn btn-success" id="exportForm">Export Form Data</button>
+      </div>
+
+      <div id="formOutput" class="alert alert-info" style="margin-top: 1rem; display: none;">
+        <pre id="formDataDisplay" style="margin: 0; white-space: pre-wrap;"></pre>
+      </div>
+    </div>
+
+    <!-- Accordion Demo -->
+    <div class="card">
+      <h2 class="form-section-title">Accordion Demo</h2>
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Section 1: Personal Information</span>
+          <span>+</span>
+        </div>
+        <div class="accordion-content">
+          <p>This section would contain personal information fields like name, address, phone number, etc.</p>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Section 2: Account Settings</span>
+          <span>+</span>
+        </div>
+        <div class="accordion-content">
+          <p>This section would contain account-related settings like username, password change, etc.</p>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Section 3: Preferences</span>
+          <span>+</span>
+        </div>
+        <div class="accordion-content">
+          <p>This section would contain user preferences like notification settings, display options, etc.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    let tags = [];
+    let files = [];
+    let rating = 0;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTheme();
+      setupEventListeners();
+    });
+
+    // Load theme
+    async function loadTheme() {
+      try {
+        const response = await fetch('/api/settings');
+        const settings = await response.json();
+        if (settings.theme === 'dark') {
+          document.body.classList.add('dark-theme');
+        }
+      } catch (error) {
+        console.error('Error loading theme:', error);
+      }
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Email validation
+      document.getElementById('emailInput').addEventListener('input', function() {
+        const validation = document.getElementById('emailValidation');
+        if (!this.value) {
+          validation.textContent = '';
+        } else if (this.value.includes('@') && this.value.includes('.')) {
+          validation.textContent = '✓ Valid email format';
+          validation.className = 'validation-message success';
+        } else {
+          validation.textContent = '✗ Invalid email format';
+          validation.className = 'validation-message error';
+        }
+      });
+
+      // Password strength
+      document.getElementById('passwordInput').addEventListener('input', function() {
+        const strength = document.getElementById('passwordStrength');
+        const len = this.value.length;
+        if (len === 0) {
+          strength.textContent = '';
+        } else if (len < 6) {
+          strength.textContent = 'Weak password';
+          strength.className = 'validation-message error';
+        } else if (len < 10) {
+          strength.textContent = 'Medium password';
+          strength.className = 'validation-message';
+          strength.style.color = 'var(--warning-color)';
+        } else {
+          strength.textContent = 'Strong password';
+          strength.className = 'validation-message success';
+        }
+      });
+
+      // Phone formatting
+      document.getElementById('phoneInput').addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length > 0) {
+          if (value.length <= 3) {
+            value = '(' + value;
+          } else if (value.length <= 6) {
+            value = '(' + value.substring(0, 3) + ') ' + value.substring(3);
+          } else {
+            value = '(' + value.substring(0, 3) + ') ' + value.substring(3, 6) + '-' + value.substring(6, 10);
+          }
+        }
+        this.value = value;
+      });
+
+      // Textarea character count
+      document.getElementById('textareaInput').addEventListener('input', function() {
+        const count = this.value.length;
+        document.getElementById('charCount').textContent = count;
+        if (count > 500) {
+          this.value = this.value.substring(0, 500);
+          document.getElementById('charCount').textContent = 500;
+        }
+      });
+
+      // Color picker
+      document.getElementById('colorInput').addEventListener('input', function() {
+        document.getElementById('colorPreview').style.backgroundColor = this.value;
+        document.getElementById('colorValue').textContent = this.value;
+      });
+
+      // Range slider
+      document.getElementById('rangeInput').addEventListener('input', function() {
+        document.getElementById('rangeValue').textContent = this.value;
+      });
+
+      // Star rating
+      const stars = document.querySelectorAll('#starRating span');
+      stars.forEach(star => {
+        star.addEventListener('click', function() {
+          rating = parseInt(this.dataset.value);
+          updateStars();
+        });
+        star.addEventListener('mouseenter', function() {
+          const hoverValue = parseInt(this.dataset.value);
+          stars.forEach((s, i) => {
+            s.classList.toggle('active', i < hoverValue);
+          });
+        });
+      });
+
+      document.getElementById('starRating').addEventListener('mouseleave', updateStars);
+
+      // Tag input
+      document.getElementById('tagInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && this.value.trim()) {
+          e.preventDefault();
+          addTag(this.value.trim());
+          this.value = '';
+        }
+      });
+
+      // File drag & drop
+      const dropZone = document.getElementById('dropZone');
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+      });
+
+      dropZone.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = true;
+        input.onchange = (e) => handleFiles(e.target.files);
+        input.click();
+      });
+
+      // Form actions
+      document.getElementById('submitForm').addEventListener('click', submitForm);
+      document.getElementById('resetForm').addEventListener('click', resetForm);
+      document.getElementById('fillSample').addEventListener('click', fillSampleData);
+      document.getElementById('validateForm').addEventListener('click', validateAll);
+      document.getElementById('exportForm').addEventListener('click', exportFormData);
+    }
+
+    // Update stars
+    function updateStars() {
+      const stars = document.querySelectorAll('#starRating span');
+      stars.forEach((s, i) => {
+        s.classList.toggle('active', i < rating);
+      });
+      document.getElementById('ratingText').textContent = rating ? `Rating: ${rating}/5` : 'Click to rate';
+    }
+
+    // Add tag
+    function addTag(text) {
+      if (tags.includes(text)) {
+        showToast('Tag already exists', 'error');
+        return;
+      }
+      tags.push(text);
+      renderTags();
+    }
+
+    // Remove tag
+    function removeTag(text) {
+      tags = tags.filter(t => t !== text);
+      renderTags();
+    }
+
+    // Render tags
+    function renderTags() {
+      const container = document.getElementById('tagContainer');
+      container.innerHTML = tags.map(tag =>
+        `<span class="chip">${tag}<button onclick="removeTag('${tag}')">&times;</button></span>`
+      ).join('');
+    }
+
+    // Handle files
+    function handleFiles(fileList) {
+      files = [...fileList];
+      const container = document.getElementById('fileList');
+      container.innerHTML = files.map(f =>
+        `<span class="chip">${f.name} (${(f.size / 1024).toFixed(1)} KB)</span>`
+      ).join('');
+      showToast(`${files.length} file(s) selected`, 'success');
+    }
+
+    // Accordion toggle
+    function toggleAccordion(header) {
+      const item = header.parentElement;
+      item.classList.toggle('active');
+      const icon = header.querySelector('span:last-child');
+      icon.textContent = item.classList.contains('active') ? '−' : '+';
+    }
+
+    // Submit form
+    function submitForm() {
+      const formData = gatherFormData();
+      document.getElementById('formOutput').style.display = 'block';
+      document.getElementById('formDataDisplay').textContent = JSON.stringify(formData, null, 2);
+      showToast('Form submitted! Check the output below.', 'success');
+    }
+
+    // Reset form
+    function resetForm() {
+      document.querySelectorAll('input, select, textarea').forEach(el => {
+        if (el.type === 'checkbox' || el.type === 'radio') {
+          el.checked = false;
+        } else if (el.type === 'color') {
+          el.value = '#4a90d9';
+        } else if (el.type === 'range') {
+          el.value = 50;
+        } else if (el.tagName === 'SELECT') {
+          el.selectedIndex = 0;
+        } else {
+          el.value = '';
+        }
+      });
+      tags = [];
+      files = [];
+      rating = 0;
+      renderTags();
+      updateStars();
+      document.getElementById('fileList').innerHTML = '';
+      document.getElementById('charCount').textContent = '0';
+      document.getElementById('colorPreview').style.backgroundColor = '#4a90d9';
+      document.getElementById('colorValue').textContent = '#4a90d9';
+      document.getElementById('rangeValue').textContent = '50';
+      document.getElementById('formOutput').style.display = 'none';
+      document.getElementById('emailValidation').textContent = '';
+      document.getElementById('passwordStrength').textContent = '';
+      showToast('Form reset!', 'info');
+    }
+
+    // Fill sample data
+    function fillSampleData() {
+      document.getElementById('textInput').value = 'Sample text';
+      document.getElementById('emailInput').value = 'test@example.com';
+      document.getElementById('passwordInput').value = 'SecurePass123!';
+      document.getElementById('numberInput').value = '42';
+      document.getElementById('phoneInput').value = '(555) 123-4567';
+      document.getElementById('textareaInput').value = 'This is a sample textarea content for testing purposes.';
+      document.getElementById('charCount').textContent = document.getElementById('textareaInput').value.length;
+      document.getElementById('selectInput').value = 'option2';
+      document.getElementById('radio2').checked = true;
+      document.getElementById('check1').checked = true;
+      document.getElementById('check3').checked = true;
+      document.getElementById('toggle1').checked = true;
+      document.getElementById('dateInput').value = '2024-01-15';
+      document.getElementById('timeInput').value = '14:30';
+      document.getElementById('colorInput').value = '#e74c3c';
+      document.getElementById('colorPreview').style.backgroundColor = '#e74c3c';
+      document.getElementById('colorValue').textContent = '#e74c3c';
+      document.getElementById('rangeInput').value = 75;
+      document.getElementById('rangeValue').textContent = '75';
+      rating = 4;
+      updateStars();
+      tags = ['javascript', 'html', 'css'];
+      renderTags();
+
+      // Trigger email validation
+      document.getElementById('emailInput').dispatchEvent(new Event('input'));
+      document.getElementById('passwordInput').dispatchEvent(new Event('input'));
+
+      showToast('Sample data filled!', 'success');
+    }
+
+    // Validate all
+    function validateAll() {
+      const errors = [];
+
+      if (!document.getElementById('textInput').value) {
+        errors.push('Text input is empty');
+      }
+
+      const email = document.getElementById('emailInput').value;
+      if (!email || !email.includes('@') || !email.includes('.')) {
+        errors.push('Email is invalid');
+      }
+
+      if (document.getElementById('passwordInput').value.length < 6) {
+        errors.push('Password is too short');
+      }
+
+      if (!document.getElementById('selectInput').value) {
+        errors.push('Please select an option');
+      }
+
+      if (!document.querySelector('input[name="radioGroup"]:checked')) {
+        errors.push('Please select a radio option');
+      }
+
+      if (errors.length > 0) {
+        showToast(`Validation errors: ${errors.join(', ')}`, 'error');
+      } else {
+        showToast('All validations passed!', 'success');
+      }
+    }
+
+    // Export form data
+    function exportFormData() {
+      const formData = gatherFormData();
+      const blob = new Blob([JSON.stringify(formData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'form-data.json';
+      a.click();
+      showToast('Form data exported!', 'success');
+    }
+
+    // Gather form data
+    function gatherFormData() {
+      return {
+        textInput: document.getElementById('textInput').value,
+        emailInput: document.getElementById('emailInput').value,
+        passwordInput: document.getElementById('passwordInput').value,
+        numberInput: document.getElementById('numberInput').value,
+        phoneInput: document.getElementById('phoneInput').value,
+        textareaInput: document.getElementById('textareaInput').value,
+        selectInput: document.getElementById('selectInput').value,
+        multiSelect: [...document.getElementById('multiSelect').selectedOptions].map(o => o.value),
+        radioGroup: document.querySelector('input[name="radioGroup"]:checked')?.value || null,
+        checkboxes: {
+          check1: document.getElementById('check1').checked,
+          check2: document.getElementById('check2').checked,
+          check3: document.getElementById('check3').checked,
+        },
+        toggles: {
+          toggle1: document.getElementById('toggle1').checked,
+          toggle2: document.getElementById('toggle2').checked,
+        },
+        dateInput: document.getElementById('dateInput').value,
+        timeInput: document.getElementById('timeInput').value,
+        colorInput: document.getElementById('colorInput').value,
+        rangeInput: document.getElementById('rangeInput').value,
+        rating: rating,
+        tags: tags,
+        files: files.map(f => ({ name: f.name, size: f.size, type: f.type })),
+      };
+    }
+
+    // Toast
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `
+        <span style="color: ${type === 'success' ? 'var(--success-color)' : type === 'error' ? 'var(--danger-color)' : 'var(--info-color)'}">${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}</span>
+        ${message}
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+  </script>
+</body>
+</html>
