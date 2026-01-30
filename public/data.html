@@ -8,14 +8,14 @@
 </head>
 <body>
   <nav>
-    <a href="/" class="logo">FeatureDisplay</a>
+    <a href="index.html" class="logo">FeatureDisplay</a>
     <ul>
-      <li><a href="/">Dashboard</a></li>
-      <li><a href="/todos.html">Todos</a></li>
-      <li><a href="/notes.html">Notes</a></li>
-      <li><a href="/data.html" class="active">Data Table</a></li>
-      <li><a href="/forms.html">Forms</a></li>
-      <li><a href="/settings.html">Settings</a></li>
+      <li><a href="index.html">Dashboard</a></li>
+      <li><a href="todos.html">Todos</a></li>
+      <li><a href="notes.html">Notes</a></li>
+      <li><a href="data.html" class="active">Data Table</a></li>
+      <li><a href="forms.html">Forms</a></li>
+      <li><a href="settings.html">Settings</a></li>
     </ul>
   </nav>
 
@@ -183,6 +183,7 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
+  <script src="storage.js"></script>
   <script>
     // Sample data
     let data = [
@@ -225,15 +226,10 @@
     });
 
     // Load theme
-    async function loadTheme() {
-      try {
-        const response = await fetch('/api/settings');
-        const settings = await response.json();
-        if (settings.theme === 'dark') {
-          document.body.classList.add('dark-theme');
-        }
-      } catch (error) {
-        console.error('Error loading theme:', error);
+    function loadTheme() {
+      const settings = Storage.getSettings();
+      if (settings.theme === 'dark') {
+        document.body.classList.add('dark-theme');
       }
     }
 

@@ -2,6 +2,8 @@
 
 A test application with multiple pages and interactive features designed for automated agent testing.
 
+**Live demo:** [https://carlo.github.io/FeatureDisplay/](https://carlo.github.io/FeatureDisplay/) *(update with your GitHub username)*
+
 ## Features
 
 - **Dashboard** - Overview with stats, quick actions, notifications, and modals
@@ -10,6 +12,10 @@ A test application with multiple pages and interactive features designed for aut
 - **Data Table** - Sortable columns, pagination, filtering, bulk operations, CSV export
 - **Forms Demo** - Various input types, validation, file upload, tags, accordions
 - **Settings** - Tabs, toggles, theme switching, multiple configuration options
+
+## Data Storage
+
+All data (todos, notes, settings) is stored in your browser's `localStorage`. No server or database is required. Data persists across page reloads but is local to your browser.
 
 ## Interactive Elements
 
@@ -34,48 +40,28 @@ The application includes many interactive elements for agent testing:
 
 ## Getting Started
 
-### Prerequisites
+### Static (GitHub Pages)
 
-- Node.js (v14 or higher)
+The app runs entirely in the browser. Open `public/index.html` directly or deploy to any static hosting.
 
-### Installation
+### Local Development with Server (optional)
 
 ```bash
 npm install
-```
-
-### Running the Application
-
-```bash
 npm start
 ```
 
-The application will be available at `http://localhost:3000`
+The Express server at `http://localhost:3005` serves the same static files and also provides REST API endpoints. The client-side app uses `localStorage` and does not require the server.
 
 ### Available Pages
 
-- `/` - Dashboard
-- `/todos.html` - Todo List
-- `/notes.html` - Notes
-- `/data.html` - Data Table
-- `/forms.html` - Forms Demo
-- `/settings.html` - Settings
+- `index.html` - Dashboard
+- `todos.html` - Todo List
+- `notes.html` - Notes
+- `data.html` - Data Table
+- `forms.html` - Forms Demo
+- `settings.html` - Settings
 
-## API Endpoints
+## Deployment
 
-The application includes a simple REST API:
-
-### Todos
-- `GET /api/todos` - Get all todos
-- `POST /api/todos` - Create a todo
-- `PUT /api/todos/:id` - Update a todo
-- `DELETE /api/todos/:id` - Delete a todo
-
-### Notes
-- `GET /api/notes` - Get all notes
-- `POST /api/notes` - Create a note
-- `DELETE /api/notes/:id` - Delete a note
-
-### Settings
-- `GET /api/settings` - Get settings
-- `PUT /api/settings` - Update settings
+Push to `main` and GitHub Actions will automatically deploy the `public/` folder to GitHub Pages. Make sure GitHub Pages is enabled in your repository settings (Settings > Pages > Source: GitHub Actions).

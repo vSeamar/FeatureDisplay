@@ -54,14 +54,14 @@
 </head>
 <body>
   <nav>
-    <a href="/" class="logo">FeatureDisplay</a>
+    <a href="index.html" class="logo">FeatureDisplay</a>
     <ul>
-      <li><a href="/">Dashboard</a></li>
-      <li><a href="/todos.html">Todos</a></li>
-      <li><a href="/notes.html" class="active">Notes</a></li>
-      <li><a href="/data.html">Data Table</a></li>
-      <li><a href="/forms.html">Forms</a></li>
-      <li><a href="/settings.html">Settings</a></li>
+      <li><a href="index.html">Dashboard</a></li>
+      <li><a href="todos.html">Todos</a></li>
+      <li><a href="notes.html" class="active">Notes</a></li>
+      <li><a href="data.html">Data Table</a></li>
+      <li><a href="forms.html">Forms</a></li>
+      <li><a href="settings.html">Settings</a></li>
     </ul>
   </nav>
 
@@ -167,6 +167,7 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
+  <script src="storage.js"></script>
   <script>
     let notes = [];
     let currentCategory = 'all';
@@ -188,28 +189,17 @@
     });
 
     // Load theme
-    async function loadTheme() {
-      try {
-        const response = await fetch('/api/settings');
-        const settings = await response.json();
-        if (settings.theme === 'dark') {
-          document.body.classList.add('dark-theme');
-        }
-      } catch (error) {
-        console.error('Error loading theme:', error);
+    function loadTheme() {
+      const settings = Storage.getSettings();
+      if (settings.theme === 'dark') {
+        document.body.classList.add('dark-theme');
       }
     }
 
     // Load notes
-    async function loadNotes() {
-      try {
-        const response = await fetch('/api/notes');
-        notes = await response.json();
-        renderNotes();
-      } catch (error) {
-        console.error('Error loading notes:', error);
-        showToast('Error loading notes', 'error');
-      }
+    function loadNotes() {
+      notes = Storage.getNotes();
+      renderNotes();
     }
 
     // Render notes
@@ -311,25 +301,21 @@
     });
 
     // Delete note from view modal
-    document.getElementById('deleteNoteBtn').addEventListener('click', async () => {
+    document.getElementById('deleteNoteBtn').addEventListener('click', () => {
       if (viewingNoteId) {
-        await deleteNote(viewingNoteId);
+        deleteNote(viewingNoteId);
         closeViewModal();
       }
     });
 
     // Delete note
-    async function deleteNote(id) {
+    function deleteNote(id) {
       if (!confirm('Are you sure you want to delete this note?')) return;
 
-      try {
-        await fetch(`/api/notes/${id}`, { method: 'DELETE' });
-        notes = notes.filter(n => n.id !== id);
-        renderNotes();
-        showToast('Note deleted', 'success');
-      } catch (error) {
-        showToast('Error deleting note', 'error');
-      }
+      Storage.deleteNote(id);
+      notes = notes.filter(n => n.id !== id);
+      renderNotes();
+      showToast('Note deleted', 'success');
     }
 
     // Add note button
@@ -344,7 +330,7 @@
     });
 
     // Save note
-    document.getElementById('saveNoteBtn').addEventListener('click', async () => {
+    document.getElementById('saveNoteBtn').addEventListener('click', () => {
       const id = document.getElementById('noteId').value;
       const title = document.getElementById('noteTitle').value.trim();
       const content = document.getElementById('noteContent').value.trim();
@@ -355,27 +341,18 @@
         return;
       }
 
-      try {
-        if (id) {
-          // Update - for simplicity, delete and recreate
-          await fetch(`/api/notes/${id}`, { method: 'DELETE' });
-          notes = notes.filter(n => n.id !== parseInt(id));
-        }
-
-        const response = await fetch('/api/notes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, content, category })
-        });
-        const newNote = await response.json();
-        notes.push(newNote);
-
-        closeModal();
-        renderNotes();
-        showToast(id ? 'Note updated!' : 'Note added!', 'success');
-      } catch (error) {
-        showToast('Error saving note', 'error');
+      if (id) {
+        // Update - delete and recreate
+        Storage.deleteNote(parseInt(id));
+        notes = notes.filter(n => n.id !== parseInt(id));
       }
+
+      const newNote = Storage.addNote({ title, content, category });
+      notes.push(newNote);
+
+      closeModal();
+      renderNotes();
+      showToast(id ? 'Note updated!' : 'Note added!', 'success');
     });
 
     // Toggle view

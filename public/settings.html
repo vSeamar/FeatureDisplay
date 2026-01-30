@@ -8,14 +8,14 @@
 </head>
 <body>
   <nav>
-    <a href="/" class="logo">FeatureDisplay</a>
+    <a href="index.html" class="logo">FeatureDisplay</a>
     <ul>
-      <li><a href="/">Dashboard</a></li>
-      <li><a href="/todos.html">Todos</a></li>
-      <li><a href="/notes.html">Notes</a></li>
-      <li><a href="/data.html">Data Table</a></li>
-      <li><a href="/forms.html">Forms</a></li>
-      <li><a href="/settings.html" class="active">Settings</a></li>
+      <li><a href="index.html">Dashboard</a></li>
+      <li><a href="todos.html">Todos</a></li>
+      <li><a href="notes.html">Notes</a></li>
+      <li><a href="data.html">Data Table</a></li>
+      <li><a href="forms.html">Forms</a></li>
+      <li><a href="settings.html" class="active">Settings</a></li>
     </ul>
   </nav>
 
@@ -360,6 +360,7 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
+  <script src="storage.js"></script>
   <script>
     let settings = {};
     let unsavedChanges = false;
@@ -371,16 +372,10 @@
       setupEventListeners();
     });
 
-    // Load settings from API
-    async function loadSettings() {
-      try {
-        const response = await fetch('/api/settings');
-        settings = await response.json();
-        applySettings();
-      } catch (error) {
-        console.error('Error loading settings:', error);
-        showToast('Error loading settings', 'error');
-      }
+    // Load settings from localStorage
+    function loadSettings() {
+      settings = Storage.getSettings();
+      applySettings();
     }
 
     // Apply settings to UI
@@ -534,7 +529,7 @@
     }
 
     // Save settings
-    async function saveSettings() {
+    function saveSettings() {
       const newSettings = {
         theme: document.body.classList.contains('dark-theme') ? 'dark' : 'light',
         language: document.getElementById('language').value,
@@ -543,20 +538,11 @@
         notifications: document.getElementById('enableNotifications').checked,
       };
 
-      try {
-        await fetch('/api/settings', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newSettings)
-        });
-
-        settings = newSettings;
-        unsavedChanges = false;
-        updateSaveStatus();
-        showToast('Settings saved!', 'success');
-      } catch (error) {
-        showToast('Error saving settings', 'error');
-      }
+      Storage.updateSettings(newSettings);
+      settings = newSettings;
+      unsavedChanges = false;
+      updateSaveStatus();
+      showToast('Settings saved!', 'success');
     }
 
     // Toast

@@ -8,14 +8,14 @@
 </head>
 <body>
   <nav>
-    <a href="/" class="logo">FeatureDisplay</a>
+    <a href="index.html" class="logo">FeatureDisplay</a>
     <ul>
-      <li><a href="/">Dashboard</a></li>
-      <li><a href="/todos.html" class="active">Todos</a></li>
-      <li><a href="/notes.html">Notes</a></li>
-      <li><a href="/data.html">Data Table</a></li>
-      <li><a href="/forms.html">Forms</a></li>
-      <li><a href="/settings.html">Settings</a></li>
+      <li><a href="index.html">Dashboard</a></li>
+      <li><a href="todos.html" class="active">Todos</a></li>
+      <li><a href="notes.html">Notes</a></li>
+      <li><a href="data.html">Data Table</a></li>
+      <li><a href="forms.html">Forms</a></li>
+      <li><a href="settings.html">Settings</a></li>
     </ul>
   </nav>
 
@@ -114,6 +114,7 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
+  <script src="storage.js"></script>
   <script>
     let todos = [];
     let selectedTodos = new Set();
@@ -133,29 +134,18 @@
     });
 
     // Load theme
-    async function loadTheme() {
-      try {
-        const response = await fetch('/api/settings');
-        const settings = await response.json();
-        if (settings.theme === 'dark') {
-          document.body.classList.add('dark-theme');
-        }
-      } catch (error) {
-        console.error('Error loading theme:', error);
+    function loadTheme() {
+      const settings = Storage.getSettings();
+      if (settings.theme === 'dark') {
+        document.body.classList.add('dark-theme');
       }
     }
 
     // Load todos
-    async function loadTodos() {
-      try {
-        const response = await fetch('/api/todos');
-        todos = await response.json();
-        renderTodos();
-        updateStats();
-      } catch (error) {
-        console.error('Error loading todos:', error);
-        showToast('Error loading todos', 'error');
-      }
+    function loadTodos() {
+      todos = Storage.getTodos();
+      renderTodos();
+      updateStats();
     }
 
     // Render todos with filters and sorting
@@ -258,21 +248,13 @@
     }
 
     // Toggle todo completion
-    async function toggleComplete(id, completed) {
-      try {
-        await fetch(`/api/todos/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ completed })
-        });
-        const todo = todos.find(t => t.id === id);
-        if (todo) todo.completed = completed;
-        renderTodos();
-        updateStats();
-        showToast(completed ? 'Todo completed!' : 'Todo marked as pending', 'success');
-      } catch (error) {
-        showToast('Error updating todo', 'error');
-      }
+    function toggleComplete(id, completed) {
+      Storage.updateTodo(id, { completed });
+      const todo = todos.find(t => t.id === id);
+      if (todo) todo.completed = completed;
+      renderTodos();
+      updateStats();
+      showToast(completed ? 'Todo completed!' : 'Todo marked as pending', 'success');
     }
 
     // Edit todo
@@ -289,44 +271,31 @@
     }
 
     // Duplicate todo
-    async function duplicateTodo(id) {
+    function duplicateTodo(id) {
       const todo = todos.find(t => t.id === id);
       if (!todo) return;
 
-      try {
-        const response = await fetch('/api/todos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: todo.text + ' (copy)',
-            priority: todo.priority
-          })
-        });
-        const newTodo = await response.json();
-        todos.push(newTodo);
-        renderTodos();
-        updateStats();
-        showToast('Todo duplicated!', 'success');
-      } catch (error) {
-        showToast('Error duplicating todo', 'error');
-      }
+      const newTodo = Storage.addTodo({
+        text: todo.text + ' (copy)',
+        priority: todo.priority
+      });
+      todos.push(newTodo);
+      renderTodos();
+      updateStats();
+      showToast('Todo duplicated!', 'success');
     }
 
     // Delete todo
-    async function deleteTodo(id) {
+    function deleteTodo(id) {
       if (!confirm('Are you sure you want to delete this todo?')) return;
 
-      try {
-        await fetch(`/api/todos/${id}`, { method: 'DELETE' });
-        todos = todos.filter(t => t.id !== id);
-        selectedTodos.delete(id);
-        renderTodos();
-        updateStats();
-        updateDeleteButton();
-        showToast('Todo deleted', 'success');
-      } catch (error) {
-        showToast('Error deleting todo', 'error');
-      }
+      Storage.deleteTodo(id);
+      todos = todos.filter(t => t.id !== id);
+      selectedTodos.delete(id);
+      renderTodos();
+      updateStats();
+      updateDeleteButton();
+      showToast('Todo deleted', 'success');
     }
 
     // Add todo button
@@ -341,7 +310,7 @@
     });
 
     // Save todo
-    document.getElementById('saveTodoBtn').addEventListener('click', async () => {
+    document.getElementById('saveTodoBtn').addEventListener('click', () => {
       const id = document.getElementById('todoId').value;
       const text = document.getElementById('todoText').value.trim();
       const priority = document.getElementById('todoPriority').value;
@@ -352,47 +321,30 @@
         return;
       }
 
-      try {
-        if (id) {
-          // Update existing
-          await fetch(`/api/todos/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, priority, completed })
-          });
-          const todo = todos.find(t => t.id === parseInt(id));
-          if (todo) {
-            todo.text = text;
-            todo.priority = priority;
-            todo.completed = completed;
-          }
-          showToast('Todo updated!', 'success');
-        } else {
-          // Create new
-          const response = await fetch('/api/todos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, priority })
-          });
-          const newTodo = await response.json();
-          if (completed) {
-            await fetch(`/api/todos/${newTodo.id}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ completed: true })
-            });
-            newTodo.completed = true;
-          }
-          todos.push(newTodo);
-          showToast('Todo added!', 'success');
+      if (id) {
+        // Update existing
+        Storage.updateTodo(parseInt(id), { text, priority, completed });
+        const todo = todos.find(t => t.id === parseInt(id));
+        if (todo) {
+          todo.text = text;
+          todo.priority = priority;
+          todo.completed = completed;
         }
-
-        closeModal();
-        renderTodos();
-        updateStats();
-      } catch (error) {
-        showToast('Error saving todo', 'error');
+        showToast('Todo updated!', 'success');
+      } else {
+        // Create new
+        const newTodo = Storage.addTodo({ text, priority });
+        if (completed) {
+          Storage.updateTodo(newTodo.id, { completed: true });
+          newTodo.completed = true;
+        }
+        todos.push(newTodo);
+        showToast('Todo added!', 'success');
       }
+
+      closeModal();
+      renderTodos();
+      updateStats();
     });
 
     // Bulk select
@@ -412,24 +364,20 @@
     });
 
     // Delete selected
-    document.getElementById('deleteSelectedBtn').addEventListener('click', async () => {
+    document.getElementById('deleteSelectedBtn').addEventListener('click', () => {
       if (selectedTodos.size === 0) return;
       if (!confirm(`Delete ${selectedTodos.size} selected todos?`)) return;
 
-      try {
-        for (const id of selectedTodos) {
-          await fetch(`/api/todos/${id}`, { method: 'DELETE' });
-        }
-        todos = todos.filter(t => !selectedTodos.has(t.id));
-        selectedTodos.clear();
-        renderTodos();
-        updateStats();
-        updateDeleteButton();
-        document.getElementById('bulkSelectBtn').textContent = 'Select All';
-        showToast('Selected todos deleted', 'success');
-      } catch (error) {
-        showToast('Error deleting todos', 'error');
+      for (const id of selectedTodos) {
+        Storage.deleteTodo(id);
       }
+      todos = todos.filter(t => !selectedTodos.has(t.id));
+      selectedTodos.clear();
+      renderTodos();
+      updateStats();
+      updateDeleteButton();
+      document.getElementById('bulkSelectBtn').textContent = 'Select All';
+      showToast('Selected todos deleted', 'success');
     });
 
     // Filter listeners
