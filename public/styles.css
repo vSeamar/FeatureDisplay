@@ -60,6 +60,47 @@ nav .logo {
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+/* Hero Branding */
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+body.dark-theme .hero-brand {
+  background-color: #16213e;
+}
+
+.hero-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+}
+
+.hero-text h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.hero-tagline {
+  color: var(--secondary-color);
+  font-size: 1rem;
 }
 
 nav ul {
