@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90d9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#357abd;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95" />
+      <stop offset="100%" style="stop-color:#e8f0fe;stop-opacity:0.9" />
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect x="16" y="16" width="480" height="480" rx="96" ry="96" fill="url(#bgGrad)"/>
+  <!-- Feature grid: 4 rounded squares representing features/dashboard -->
+  <!-- Top-left -->
+  <rect x="80" y="80" width="152" height="152" rx="24" ry="24" fill="url(#accentGrad)"/>
+  <!-- Top-right -->
+  <rect x="280" y="80" width="152" height="152" rx="24" ry="24" fill="url(#accentGrad)"/>
+  <!-- Bottom-left -->
+  <rect x="80" y="280" width="152" height="152" rx="24" ry="24" fill="url(#accentGrad)"/>
+  <!-- Bottom-right: accent square -->
+  <rect x="280" y="280" width="152" height="152" rx="24" ry="24" fill="#ffffff" opacity="0.4"/>
+  <!-- Checkmark in bottom-right square representing "feature complete" -->
+  <polyline points="310,356 350,396 420,316" fill="none" stroke="#ffffff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
