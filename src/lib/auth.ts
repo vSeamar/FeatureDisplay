@@ -14,21 +14,38 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+        // Demo account fallback (works without database)
+        if (
+          credentials.email === "demo@taskflow.com" &&
+          credentials.password === "password123"
+        ) {
+          return {
+            id: "demo-user-id",
+            email: "demo@taskflow.com",
+            name: "Demo User",
+            image: null,
+          };
+        }
 
-        if (!user) return null;
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          });
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) return null;
+          if (!user) return null;
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.avatar,
-        };
+          const isValid = await bcrypt.compare(credentials.password, user.password);
+          if (!isValid) return null;
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.avatar,
+          };
+        } catch {
+          return null;
+        }
       },
     }),
   ],
