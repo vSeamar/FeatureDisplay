@@ -83,7 +83,7 @@ const categories = [
   { name: "Policies", count: 3 },
 ];
 
-const articles: Article[] = [
+const initialArticles: Article[] = [
   {
     id: "welcome",
     title: "Welcome to TaskFlow",
@@ -705,12 +705,62 @@ const articles: Article[] = [
   },
 ];
 
+const categoryLabels: Record<string, string> = {
+  "getting-started": "Getting Started",
+  development: "Development",
+  design: "Design",
+  processes: "Processes",
+  policies: "Policies",
+};
+
 export default function WikiPage() {
+  const [articles, setArticles] = useState<Article[]>(initialArticles);
   const [selectedCategory, setSelectedCategory] = useState("Getting Started");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [newArticleOpen, setNewArticleOpen] = useState(false);
   const [helpfulVotes, setHelpfulVotes] = useState<Record<string, "up" | "down" | null>>({});
+
+  const [newArticleTitle, setNewArticleTitle] = useState("");
+  const [newArticleCategory, setNewArticleCategory] = useState("getting-started");
+  const [newArticleContent, setNewArticleContent] = useState("");
+  const [newArticleTags, setNewArticleTags] = useState("");
+
+  const handlePublishArticle = () => {
+    if (!newArticleTitle) return;
+    const category = categoryLabels[newArticleCategory] || "Getting Started";
+    const tags = newArticleTags
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const article: Article = {
+      id: Date.now().toString(),
+      title: newArticleTitle,
+      author: "You",
+      authorInitials: "YO",
+      updatedAgo: "just now",
+      readTime: "1 min read",
+      preview: newArticleContent.slice(0, 100) || "No content yet.",
+      category,
+      tags,
+      helpful: 0,
+      notHelpful: 0,
+      relatedArticles: [],
+      content: {
+        sections: [
+          { type: "heading", text: newArticleTitle },
+          { type: "paragraph", text: newArticleContent || "Start writing here..." },
+        ],
+      },
+    };
+    setArticles((prev) => [article, ...prev]);
+    setNewArticleTitle("");
+    setNewArticleCategory("getting-started");
+    setNewArticleContent("");
+    setNewArticleTags("");
+    setNewArticleOpen(false);
+    setSelectedCategory(category);
+  };
 
   const filteredArticles = articles.filter((article) => {
     const matchesCategory =
@@ -981,11 +1031,16 @@ export default function WikiPage() {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="article-title">Title</Label>
-                <Input id="article-title" placeholder="Article title..." />
+                <Input
+                  id="article-title"
+                  placeholder="Article title..."
+                  value={newArticleTitle}
+                  onChange={(e) => setNewArticleTitle(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="article-category">Category</Label>
-                <Select defaultValue="getting-started">
+                <Select value={newArticleCategory} onValueChange={setNewArticleCategory}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -1006,6 +1061,8 @@ export default function WikiPage() {
                   id="article-content"
                   placeholder="Write your article content..."
                   rows={10}
+                  value={newArticleContent}
+                  onChange={(e) => setNewArticleContent(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
@@ -1013,6 +1070,8 @@ export default function WikiPage() {
                 <Input
                   id="article-tags"
                   placeholder="Add tags separated by commas..."
+                  value={newArticleTags}
+                  onChange={(e) => setNewArticleTags(e.target.value)}
                 />
               </div>
             </div>
@@ -1020,7 +1079,7 @@ export default function WikiPage() {
               <Button variant="outline" onClick={() => setNewArticleOpen(false)}>
                 Save as Draft
               </Button>
-              <Button onClick={() => setNewArticleOpen(false)}>Publish</Button>
+              <Button onClick={handlePublishArticle}>Publish</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

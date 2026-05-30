@@ -28,10 +28,12 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
+  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -1051,6 +1053,8 @@ export default function ProjectDetailPage({
   const [columns, setColumns] = useState<Record<string, Column>>(buildInitialColumns);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [addTaskOpen, setAddTaskOpen] = useState(false);
+  const [newTask, setNewTask] = useState({ title: "", priority: "medium" as Task["priority"] });
 
   const selectedTask = selectedTaskId ? tasks[selectedTaskId] : null;
 
@@ -1147,6 +1151,36 @@ export default function ProjectDetailPage({
     [tasks]
   );
 
+  // --- Add task (creates a new card in the To Do column) ---
+  const handleAddTask = useCallback(() => {
+    if (!newTask.title.trim()) return;
+
+    const id = `t-new-${Date.now()}`;
+    const task: Task = {
+      id,
+      title: newTask.title,
+      description: "",
+      status: "todo",
+      priority: newTask.priority,
+      assignee: "You",
+      assigneeColor: "bg-slate-600",
+      dueDate: null,
+      labels: [],
+      commentCount: 0,
+      comments: [],
+      startDate: null,
+    };
+
+    setTasks((prev) => ({ ...prev, [id]: task }));
+    setColumns((prev) => ({
+      ...prev,
+      todo: { ...prev.todo, taskIds: [id, ...prev.todo.taskIds] },
+    }));
+
+    setNewTask({ title: "", priority: "medium" });
+    setAddTaskOpen(false);
+  }, [newTask]);
+
   const handleTaskClick = (taskId: string) => {
     setSelectedTaskId(taskId);
     setDialogOpen(true);
@@ -1227,10 +1261,75 @@ export default function ProjectDetailPage({
               </div>
             </div>
           </div>
-          <Button size="sm">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Task
-          </Button>
+          <Dialog open={addTaskOpen} onOpenChange={setAddTaskOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Task
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Task</DialogTitle>
+                <DialogDescription>
+                  Add a new task to the To Do column.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <div className="space-y-2">
+                  <Label htmlFor="task-title">Task Title</Label>
+                  <Input
+                    id="task-title"
+                    placeholder="e.g. Redesign landing page hero section"
+                    value={newTask.title}
+                    onChange={(e) =>
+                      setNewTask({ ...newTask, title: e.target.value })
+                    }
+                    onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Priority</Label>
+                  <Select
+                    value={newTask.priority}
+                    onValueChange={(value) =>
+                      setNewTask({ ...newTask, priority: value as Task["priority"] })
+                    }
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {priorityOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          <span className="flex items-center gap-2">
+                            <span
+                              className={cn(
+                                "h-2 w-2 rounded-full",
+                                opt.value === "urgent" && "bg-red-500",
+                                opt.value === "high" && "bg-orange-500",
+                                opt.value === "medium" && "bg-yellow-500",
+                                opt.value === "low" && "bg-green-500"
+                              )}
+                            />
+                            {opt.label}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setAddTaskOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleAddTask} disabled={!newTask.title.trim()}>
+                  Add Task
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 

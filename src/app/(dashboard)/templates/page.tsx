@@ -29,6 +29,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/toast";
 import {
   Dialog,
   DialogContent,
@@ -425,6 +426,7 @@ const taskTemplates: TaskTemplate[] = [
 ];
 
 export default function TemplatesPage() {
+  const { toast } = useToast();
   const [projectTemplates, setProjectTemplates] = useState(
     initialProjectTemplates
   );
@@ -484,6 +486,27 @@ export default function TemplatesPage() {
 
   const removeChecklistItem = (index: number) => {
     setCreateChecklist((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const saveTemplate = () => {
+    if (createType === "project" && createName.trim()) {
+      const template: ProjectTemplate = {
+        id: `pt-${Date.now()}`,
+        name: createName.trim(),
+        description: createDesc.trim(),
+        taskCount: 0,
+        duration: "Custom",
+        badge: "New",
+        badgeColor:
+          "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+        starred: false,
+        columns: createColumns,
+        sampleTasks: createColumns.map((column) => ({ column, tasks: [] })),
+      };
+      setProjectTemplates((prev) => [template, ...prev]);
+    }
+    setCreateOpen(false);
+    resetForm();
   };
 
   return (
@@ -703,12 +726,7 @@ export default function TemplatesPage() {
               >
                 Cancel
               </Button>
-              <Button
-                onClick={() => {
-                  setCreateOpen(false);
-                  resetForm();
-                }}
-              >
+              <Button onClick={saveTemplate}>
                 Save Template
               </Button>
             </DialogFooter>
@@ -834,14 +852,32 @@ export default function TemplatesPage() {
                         </div>
                       </div>
                       <DialogFooter>
-                        <Button>
+                        <Button
+                          onClick={() =>
+                            toast({
+                              title: "Project created",
+                              description: `Project created from ${template.name}`,
+                              variant: "success",
+                            })
+                          }
+                        >
                           <Copy className="mr-2 h-4 w-4" />
                           Use Template
                         </Button>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
-                  <Button size="sm" className="flex-1">
+                  <Button
+                    size="sm"
+                    className="flex-1"
+                    onClick={() =>
+                      toast({
+                        title: "Project created",
+                        description: `Project created from ${template.name}`,
+                        variant: "success",
+                      })
+                    }
+                  >
                     <Copy className="mr-1 h-3.5 w-3.5" />
                     Use Template
                   </Button>

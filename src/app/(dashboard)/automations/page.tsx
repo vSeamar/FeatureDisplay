@@ -257,6 +257,25 @@ export default function AutomationsPage() {
     setActionConfig("");
   };
 
+  const saveAutomation = () => {
+    if (!newName.trim()) return;
+    const action = actionConfig
+      ? `${selectedAction}: ${actionConfig}`
+      : selectedAction;
+    const automation: Automation = {
+      id: `a-${Date.now()}`,
+      name: newName.trim(),
+      trigger: selectedTrigger,
+      action,
+      active: true,
+      runs: 0,
+      lastTriggered: "just now",
+    };
+    setAutomations((prev) => [automation, ...prev]);
+    setCreateOpen(false);
+    resetForm();
+  };
+
   const activeCount = automations.filter((a) => a.active).length;
 
   return (
@@ -484,7 +503,7 @@ export default function AutomationsPage() {
               <Button variant="outline" onClick={() => { setCreateOpen(false); resetForm(); }}>
                 Cancel
               </Button>
-              <Button onClick={() => { setCreateOpen(false); resetForm(); }}>
+              <Button onClick={saveAutomation}>
                 Save Automation
               </Button>
             </DialogFooter>

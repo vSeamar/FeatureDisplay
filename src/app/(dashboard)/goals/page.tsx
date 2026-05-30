@@ -63,7 +63,7 @@ interface Goal {
   keyResults: KeyResult[];
 }
 
-const goalsData: Goal[] = [
+const initialGoalsData: Goal[] = [
   {
     id: "g1",
     title: "Launch Mobile App v2",
@@ -148,7 +148,15 @@ function progressBarColor(progress: number): string {
   return "[&>div]:bg-red-500";
 }
 
+const ownerConfig: Record<string, { name: string; color: string }> = {
+  alex: { name: "Alex Rivera", color: "bg-violet-600" },
+  sarah: { name: "Sarah Chen", color: "bg-blue-600" },
+  demo: { name: "Demo User", color: "bg-indigo-600" },
+  jordan: { name: "Jordan Kim", color: "bg-emerald-600" },
+};
+
 export default function GoalsPage() {
+  const [goalsData, setGoalsData] = useState<Goal[]>(initialGoalsData);
   const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set(["g1"]));
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editingKR, setEditingKR] = useState<string | null>(null);
@@ -177,6 +185,53 @@ export default function GoalsPage() {
 
   const removeKeyResultRow = (index: number) => {
     setNewGoalKeyResults((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleCreateGoal = () => {
+    if (!newGoalTitle) return;
+    const owner = ownerConfig[newGoalOwner] ?? { name: "You", color: "bg-slate-600" };
+    const keyResults: KeyResult[] = newGoalKeyResults
+      .filter((kr) => kr.title.trim())
+      .map((kr, i) => ({
+        id: `kr-${Date.now()}-${i}`,
+        title: kr.title,
+        progress: 0,
+        current: kr.target ? `Target: ${kr.target}` : "Not started",
+        status: "behind",
+      }));
+    const goal: Goal = {
+      id: `g-${Date.now()}`,
+      title: newGoalTitle,
+      owner: owner.name,
+      ownerColor: owner.color,
+      status: "behind",
+      progress: 0,
+      keyResults,
+    };
+    setGoalsData((prev) => [goal, ...prev]);
+    setExpandedGoals((prev) => new Set(prev).add(goal.id));
+    setNewGoalTitle("");
+    setNewGoalDescription("");
+    setNewGoalOwner("");
+    setNewGoalKeyResults([{ title: "", target: "" }]);
+    setCreateDialogOpen(false);
+  };
+
+  const handleSaveKR = (goalId: string, krId: string) => {
+    const parsed = Math.max(0, Math.min(100, Math.round(Number(editValue) || 0)));
+    setGoalsData((prev) =>
+      prev.map((goal) =>
+        goal.id !== goalId
+          ? goal
+          : {
+              ...goal,
+              keyResults: goal.keyResults.map((kr) =>
+                kr.id !== krId ? kr : { ...kr, progress: parsed }
+              ),
+            }
+      )
+    );
+    setEditingKR(null);
   };
 
   const onTrackCount = goalsData.filter((g) => g.status === "on-track").length;
@@ -307,7 +362,7 @@ export default function GoalsPage() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
-                <Button onClick={() => setCreateDialogOpen(false)}>Create Goal</Button>
+                <Button onClick={handleCreateGoal}>Create Goal</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -450,7 +505,7 @@ export default function GoalsPage() {
                                   className="h-7 px-2 text-xs"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setEditingKR(null);
+                                    handleSaveKR(goal.id, kr.id);
                                   }}
                                 >
                                   Save
